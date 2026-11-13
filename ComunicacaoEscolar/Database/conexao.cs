@@ -16,3 +16,4 @@ public class Conexao
         return new MySqlConnection(_connectionString);
     }
 }
+//correção no ultimo commit eu tinha crido a database, a conexão e o model do usuario
