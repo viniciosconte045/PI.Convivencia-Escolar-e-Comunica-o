@@ -1,6 +1,7 @@
 
 using MySqlConnector;
 using ComunicacaoEscolar.Database;
+using ComunicacaoEscolar.Models;
 
 namespace ComunicacaoEscolar.Services;
 
@@ -24,4 +25,36 @@ public class UsuarioService
 
         comandosql.ExecuteNonQuery();
     }
+
+     public List<Usuario> ListarUsuarios()
+    {
+        List<Usuario> usuarios = new List<Usuario>();
+
+        using MySqlConnection conexao = new Conexao().ObterConexao();
+
+        conexao.Open();
+
+        string sql = "SELECT * FROM usuario";
+
+        using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
+
+        using MySqlDataReader leitor = comandoSql.ExecuteReader();
+
+        while (leitor.Read())
+        {
+            Usuario usuario = new Usuario(
+                leitor.GetInt32("id_usuario"),
+                leitor.GetString("nome"),
+                leitor.GetString("email"),
+                leitor.GetString("tipo"),
+                leitor.GetString("senha")
+            );
+
+            usuarios.Add(usuario);
+        }
+
+        return usuarios;
+    }
 }
+
+
