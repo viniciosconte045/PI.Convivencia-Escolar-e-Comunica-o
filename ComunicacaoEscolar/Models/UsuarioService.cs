@@ -55,6 +55,29 @@ public class UsuarioService
 
         return usuarios;
     }
+    public void EditarUsuario(int id, string nome, string email, string senha, string tipo)
+{
+    using MySqlConnection conexao = new Conexao().ObterConexao();
+
+    conexao.Open();
+
+    string sql = @"UPDATE usuario
+                   SET nome = @nome,
+                       email = @email,
+                       senha = @senha,
+                       tipo = @tipo
+                   WHERE id_usuario = @id";
+
+    using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
+
+    comandoSql.Parameters.AddWithValue("@id", id);
+    comandoSql.Parameters.AddWithValue("@nome", nome);
+    comandoSql.Parameters.AddWithValue("@email", email);
+    comandoSql.Parameters.AddWithValue("@senha", senha);
+    comandoSql.Parameters.AddWithValue("@tipo", tipo);
+
+    comandoSql.ExecuteNonQuery();
+}
 }
 
 
