@@ -2,52 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mail;
  
-class Program
+public static class Cadastros
 {
     static List<string> emailsCadastrados = new List<string>();
  
-    static void Main(string[] args)
-    {
-        int opcao = -1;
- 
-        while (opcao != 0)
-        {
-            Console.WriteLine("\n===== SISTEMA DE CADASTRO =====");
-            Console.WriteLine("1 - Fazer cadastro");
-            Console.WriteLine("2 - Testar cadastro");
-            Console.WriteLine("0 - Sair");
-            Console.Write("Escolha uma opção: ");
- 
-            if (!int.TryParse(Console.ReadLine(), out opcao))
-            {
-                Console.WriteLine("Digite um número válido!");
-                opcao = -1;
-                continue;
-            }
- 
-            switch (opcao)
-            {
-                case 1:
-                    CadastroPublico();
-                    break;
- 
-                case 2:
-                    TestesCadastro();
-                    break;
- 
-                case 0:
-                    Console.WriteLine("Sistema encerrado.");
-                    break;
- 
-                default:
-                    Console.WriteLine("Opção inválida!");
-                    break;
-            }
-        }
-    }
  
     // CADASTRO PÚBLICO
-    static void CadastroPublico()
+    public static void CadastroPublico()
     {
         Console.WriteLine("\n===== NOVO CADASTRO =====");
  
@@ -109,7 +70,7 @@ class Program
     }
  
     // VALIDAÇÃO DO E-MAIL
-    static bool EmailValido(string email)
+    public static bool EmailValido(string email)
     {
         try
         {
@@ -123,7 +84,7 @@ class Program
     }
  
     // TESTES DO CADASTRO
-    static void TestesCadastro()
+    public static void TestesCadastro()
     {
         Console.WriteLine("\n===== TESTES DO CADASTRO =====");
  
