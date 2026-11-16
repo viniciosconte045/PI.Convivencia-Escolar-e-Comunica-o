@@ -6,7 +6,7 @@ namespace ComunicacaoEscolar.Database;
 public class Conexao
 {
     private readonly string _connectionString =
-        "Server=127.0.0.1;Port=3306;Database=comunicacao_escolar;User ID=root;Password=Achou q iria vazar;";
+        "Server=127.0.0.1;Port=3306;Database=comunicacao_escolar;User ID=root;Password=Senac2026;";
 
     public MySqlConnection ObterConexao()
     {
