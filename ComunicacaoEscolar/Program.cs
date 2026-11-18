@@ -36,6 +36,11 @@ while (true)
         {
             MenuAdministrador();
         }
+
+        else if (usuario.Tipo == "funcionario")
+        {
+            MenuFuncionario();
+        }
         else
         {
             Console.WriteLine("\nMenu ainda não implementado para esse tipo de usuário.");
@@ -298,3 +303,57 @@ static void MenuAdministrador()
 }
 
 
+static void MenuFuncionario()
+{
+    int opcao;
+
+    do
+    {
+        Console.Clear();
+
+        Console.WriteLine("================================");
+        Console.WriteLine("       MENU DO FUNCIONÁRIO");
+        Console.WriteLine("================================");
+        Console.WriteLine("1 - Enviar mensagem");
+        Console.WriteLine("2 - Visualizar mensagens");
+        Console.WriteLine("3 - Consultar eventos");
+        Console.WriteLine("0 - Sair da conta");
+        Console.WriteLine("================================");
+
+        Console.Write("\nEscolha uma opção: ");
+
+        if (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 0 || opcao > 3)
+        {
+            Console.WriteLine("\nOpção inválida!");
+            Console.WriteLine("Pressione ENTER para voltar ao menu.");
+            Console.ReadLine();
+            continue;
+        }
+
+        switch (opcao)
+        {
+            case 1:
+                Console.WriteLine("\nEnviar mensagem");
+                break;
+
+            case 2:
+                Console.WriteLine("\nVisualizar mensagens");
+                break;
+
+            case 3:
+                Console.WriteLine("\nConsultar eventos");
+                break;
+
+            case 0:
+                Console.WriteLine("\nSaindo da conta...");
+                break;
+        }
+
+        if (opcao != 0)
+        {
+            Console.WriteLine("\nPressione ENTER para continuar...");
+            Console.ReadLine();
+        }
+
+    } while (opcao != 0);
+}
