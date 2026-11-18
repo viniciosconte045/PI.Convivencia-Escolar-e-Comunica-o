@@ -104,3 +104,6 @@ public static class Cadastros
             (EmailValido("teste@email.com") ? "APROVADO" : "REPROVADO"));
     }
 }
+
+
+
