@@ -7,7 +7,7 @@ public static class Cadastros
     static List<string> emailsCadastrados = new List<string>();
  
  
-    // CADASTRO PÚBLICO
+    
     public static void CadastroPublico()
     {
         Console.WriteLine("\n===== NOVO CADASTRO =====");
@@ -69,7 +69,7 @@ public static class Cadastros
         Console.WriteLine("E-mail: " + email);
     }
  
-    // VALIDAÇÃO DO E-MAIL
+
     public static bool EmailValido(string email)
     {
         try
@@ -83,7 +83,7 @@ public static class Cadastros
         }
     }
  
-    // TESTES DO CADASTRO
+    
     public static void TestesCadastro()
     {
         Console.WriteLine("\n===== TESTES DO CADASTRO =====");
