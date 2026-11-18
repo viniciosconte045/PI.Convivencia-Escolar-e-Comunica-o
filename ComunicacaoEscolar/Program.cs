@@ -39,7 +39,7 @@ while (true)
 
         else if (usuario.Tipo == "funcionario")
         {
-            MenuFuncionario();
+            MenuFuncionario(usuario);
         }
         else
         {
@@ -303,9 +303,11 @@ static void MenuAdministrador()
 }
 
 
-static void MenuFuncionario()
+static void MenuFuncionario(Usuario usuarioLogado)
 {
     int opcao;
+
+    AvisoService avisoService = new AvisoService();
 
     do
     {
@@ -315,7 +317,7 @@ static void MenuFuncionario()
         Console.WriteLine("       MENU DO FUNCIONÁRIO");
         Console.WriteLine("================================");
         Console.WriteLine("1 - Enviar mensagem");
-        Console.WriteLine("2 - Visualizar mensagens");
+        Console.WriteLine("2 - Acessar Conversas");
         Console.WriteLine("3 - Consultar eventos");
         Console.WriteLine("0 - Sair da conta");
         Console.WriteLine("================================");
@@ -333,8 +335,35 @@ static void MenuFuncionario()
         switch (opcao)
         {
             case 1:
-                Console.WriteLine("\nEnviar mensagem");
+            {
+                Console.Clear();
+
+                Console.WriteLine("===== ENVIAR AVISO GERAL =====");
+
+                Console.Write("\nTítulo: ");
+                string titulo = Console.ReadLine() ?? "";
+
+                Console.Write("Conteúdo: ");
+                string conteudo = Console.ReadLine() ?? "";
+
+                if (string.IsNullOrWhiteSpace(titulo) ||
+                    string.IsNullOrWhiteSpace(conteudo))
+                {
+                    Console.WriteLine("\nPreencha todos os campos!");
+                }
+                else
+                {
+                    avisoService.CadastrarAviso(
+                        usuarioLogado.IdUsuario,
+                        titulo,
+                        conteudo
+                    );
+
+                    Console.WriteLine("\nAviso publicado com sucesso!");
+                }
+
                 break;
+            }
 
             case 2:
                 Console.WriteLine("\nVisualizar mensagens");
@@ -357,3 +386,4 @@ static void MenuFuncionario()
 
     } while (opcao != 0);
 }
+
