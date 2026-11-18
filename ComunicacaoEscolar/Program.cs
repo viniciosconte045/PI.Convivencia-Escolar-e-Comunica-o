@@ -3,44 +3,49 @@ using ComunicacaoEscolar.Models;
 
 LoginService loginService = new LoginService();
 
-Console.WriteLine("================================");
-Console.WriteLine("       SISTEMA ESCOLAR");
-Console.WriteLine("================================");
 
-Console.Write("\nE-mail: ");
-string email = Console.ReadLine() ?? "";
-
-Console.Write("Senha: ");
-string senha = Console.ReadLine() ?? "";
-
-try
+while (true)
 {
-    Usuario? usuario = loginService.Autenticar(email, senha);
+    Console.Clear();
 
-    if (usuario == null)
+    Console.WriteLine("================================");
+    Console.WriteLine("       SISTEMA ESCOLAR");
+    Console.WriteLine("================================");
+
+    Console.Write("\nE-mail: ");
+    string email = Console.ReadLine() ?? "";
+
+    Console.Write("Senha: ");
+    string senha = Console.ReadLine() ?? "";
+
+    try
     {
-        Console.WriteLine("\nE-mail ou senha incorretos.");
-        return;
+        Usuario? usuario = loginService.Autenticar(email, senha);
+
+        if (usuario == null)
+        {
+            Console.WriteLine("\nE-mail ou senha incorretos.");
+            continue;
+        }
+
+        Console.WriteLine("\nLogin realizado com sucesso!");
+        Console.WriteLine($"Nome: {usuario.Nome}");
+        Console.WriteLine($"Tipo: {usuario.Tipo}");
+
+        if (usuario.Tipo == "admin")
+        {
+            MenuAdministrador();
+        }
+        else
+        {
+            Console.WriteLine("\nMenu ainda não implementado para esse tipo de usuário.");
+        }
     }
-
-    Console.WriteLine("\nLogin realizado com sucesso!");
-    Console.WriteLine($"Nome: {usuario.Nome}");
-    Console.WriteLine($"Tipo: {usuario.Tipo}");
-
-    if (usuario.Tipo == "admin")
+    catch (Exception erro)
     {
-        MenuAdministrador();
-    }
-    else
-    {
-        Console.WriteLine("\nMenu ainda não implementado para esse tipo de usuário.");
+        Console.WriteLine($"\nErro ao realizar login: {erro.Message}");
     }
 }
-catch (Exception erro)
-{
-    Console.WriteLine($"\nErro ao realizar login: {erro.Message}");
-}
-
 static void MenuAdministrador()
 {
     int opcao;
@@ -108,42 +113,172 @@ static void MenuAdministrador()
             }
 
             case 2:
-                Console.WriteLine("\n===== LISTA DE USUÁRIOS =====");
+            {
+                Console.WriteLine("\n===== LISTAR USUÁRIOS =====");
+                Console.WriteLine("1 - Ordenar por ID");
+                Console.WriteLine("2 - Ordenar por nome");
+
+                Console.Write("\nEscolha uma opção: ");
+
+                if (!int.TryParse(Console.ReadLine(), out int ordem) || ordem < 1 || ordem > 2)
+                {
+                    Console.WriteLine("\nOpção inválida!");
+                    break;
+                }
 
                 List<Usuario> usuarios = usuarioService.ListarUsuarios();
 
                 if (usuarios.Count == 0)
                 {
                     Console.WriteLine("\nNenhum usuário cadastrado.");
+                    break;
+                }
+
+                if (ordem == 1)
+                {
+                    usuarios = usuarios.OrderBy(u => u.IdUsuario).ToList();
                 }
                 else
                 {
-                    foreach (Usuario u in usuarios)
-                    {
-                        Console.WriteLine("\n------------------------------");
-                        Console.WriteLine($"ID: {u.IdUsuario}");
-                        Console.WriteLine($"Nome: {u.Nome}");
-                        Console.WriteLine($"E-mail: {u.Email}");
-                        Console.WriteLine($"Tipo: {u.Tipo}");
-                    }
+                    usuarios = usuarios.OrderBy(u => u.Nome).ToList();
+                }
 
-                    Console.WriteLine("------------------------------");
+                foreach (Usuario u in usuarios)
+                {
+                    Console.WriteLine("\n------------------------------");
+                    Console.WriteLine($"ID: {u.IdUsuario}");
+                    Console.WriteLine($"Nome: {u.Nome}");
+                    Console.WriteLine($"E-mail: {u.Email}");
+                    Console.WriteLine($"Tipo: {u.Tipo}");
+                }
+
+                Console.WriteLine("------------------------------");
+                break;
+            }
+
+
+            case 3:
+            {
+                Console.WriteLine("\n===== CONSULTAR USUÁRIO POR ID =====");
+
+                Console.Write("Digite o ID do usuário: ");
+
+                if (!int.TryParse(Console.ReadLine(), out int id))
+                {
+                    Console.WriteLine("\nID inválido!");
+                    break;
+                }
+
+                Usuario? usuario = usuarioService.ConsultarUsuarioPorId(id);
+
+                if (usuario == null)
+                {
+                    Console.WriteLine("\nUsuário não encontrado!");
+                }
+                else
+                {
+                    Console.WriteLine("\n===== USUÁRIO ENCONTRADO =====");
+                    Console.WriteLine($"ID: {usuario.IdUsuario}");
+                    Console.WriteLine($"Nome: {usuario.Nome}");
+                    Console.WriteLine($"E-mail: {usuario.Email}");
+                    Console.WriteLine($"Tipo: {usuario.Tipo}");
                 }
 
                 break;
-
-            case 3:
-                Console.WriteLine("\nConsulta de usuário");
-                break;
+}
 
             case 4:
-                Console.WriteLine("\nEdição de usuário");
+            {
+                Console.WriteLine("\n===== EDITAR USUÁRIO =====");
+
+                Console.Write("Digite o ID do usuário: ");
+
+                if (!int.TryParse(Console.ReadLine(), out int id))
+                {
+                    Console.WriteLine("\nID inválido!");
+                    break;
+                }
+
+                Usuario? usuario = usuarioService.ConsultarUsuarioPorId(id);
+
+                if (usuario == null)
+                {
+                    Console.WriteLine("\nUsuário não encontrado!");
+                    break;
+                }
+
+                Console.WriteLine("\n===== DADOS ATUAIS =====");
+                Console.WriteLine($"Nome: {usuario.Nome}");
+                Console.WriteLine($"E-mail: {usuario.Email}");
+                Console.WriteLine($"Tipo: {usuario.Tipo}");
+
+                Console.WriteLine("\n===== NOVOS DADOS =====");
+
+                Console.Write("Novo nome: ");
+                string nome = Console.ReadLine() ?? "";
+
+                Console.Write("Novo e-mail: ");
+                string email = Console.ReadLine() ?? "";
+
+                Console.Write("Nova senha: ");
+                string senha = Console.ReadLine() ?? "";
+
+                Console.Write("Novo tipo (aluno, funcionario ou admin): ");
+                string tipo = Console.ReadLine() ?? "";
+
+                if (nome == "" || email == "" || senha == "" || tipo == "")
+                {
+                    Console.WriteLine("\nPreencha todos os campos!");
+                    break;
+                }
+
+                usuarioService.EditarUsuario(id, nome, email, senha, tipo);
+
+                Console.WriteLine("\nUsuário atualizado com sucesso!");
+
                 break;
+            }
 
             case 5:
-                Console.WriteLine("\nExclusão de usuário");
-                break;
+            {
+                Console.WriteLine("\n===== EXCLUIR USUÁRIO =====");
 
+                Console.Write("Digite o ID do usuário: ");
+
+                if (!int.TryParse(Console.ReadLine(), out int id))
+                {
+                    Console.WriteLine("\nID inválido!");
+                    break;
+                }
+
+                Usuario? usuario = usuarioService.ConsultarUsuarioPorId(id);
+
+                if (usuario == null)
+                {
+                    Console.WriteLine("\nUsuário não encontrado!");
+                    break;
+                }
+
+                Console.WriteLine($"\nNome: {usuario.Nome}");
+                Console.WriteLine($"E-mail: {usuario.Email}");
+                Console.WriteLine($"Tipo: {usuario.Tipo}");
+
+                Console.Write("\nTem certeza que deseja excluir? (s/n): ");
+                string confirmacao = Console.ReadLine() ?? "";
+
+                if (confirmacao.ToLower() == "s")
+                {
+                    usuarioService.ExcluirUsuario(id);
+                    Console.WriteLine("\nUsuário excluído com sucesso!");
+                }
+                else
+                {
+                    Console.WriteLine("\nExclusão cancelada.");
+                }
+
+                break;
+            }
+               
             case 0:
                 Console.WriteLine("\nSaindo da conta...");
                 break;
