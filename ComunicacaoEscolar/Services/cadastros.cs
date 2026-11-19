@@ -1,23 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Mail;
+using ComunicacaoEscolar.Services;
  
 public static class Cadastros
 {
-    static List<string> emailsCadastrados = new List<string>();
- 
- 
-    
     public static void CadastroPublico()
     {
-        Console.WriteLine("\n===== NOVO CADASTRO =====");
+        UsuarioService usuarioService = new UsuarioService();
+ 
+        Console.WriteLine("\n===== NOVO CADASTRO DE ALUNO =====");
  
         Console.Write("Nome: ");
         string nome = Console.ReadLine() ?? "";
  
         Console.Write("E-mail: ");
         string email = Console.ReadLine() ?? "";
- 
         email = email.Trim().ToLower();
  
         Console.Write("Senha: ");
@@ -28,48 +25,53 @@ public static class Cadastros
  
         if (string.IsNullOrWhiteSpace(nome))
         {
-            Console.WriteLine("Erro: informe seu nome.");
+            Console.WriteLine("\nErro: informe seu nome.");
             return;
         }
  
         if (nome.Length > 100)
         {
-            Console.WriteLine("Erro: o nome deve ter até 100 caracteres.");
+            Console.WriteLine("\nErro: o nome deve ter até 100 caracteres.");
             return;
         }
  
         if (!EmailValido(email))
         {
-            Console.WriteLine("Erro: e-mail inválido.");
+            Console.WriteLine("\nErro: e-mail inválido.");
             return;
         }
  
         if (senha.Length < 8)
         {
-            Console.WriteLine("Erro: a senha deve ter pelo menos 8 caracteres.");
+            Console.WriteLine("\nErro: a senha deve ter pelo menos 8 caracteres.");
             return;
         }
  
         if (senha != confirmarSenha)
         {
-            Console.WriteLine("Erro: as senhas não são iguais.");
+            Console.WriteLine("\nErro: as senhas não são iguais.");
             return;
         }
  
-        if (emailsCadastrados.Contains(email))
+        try
         {
-            Console.WriteLine("Erro: este e-mail já está cadastrado.");
-            return;
+            if (usuarioService.EmailExiste(email))
+            {
+                Console.WriteLine("\nErro: este e-mail já está cadastrado.");
+                return;
+            }
+ 
+            usuarioService.CadastrarAluno(nome, email, senha);
+ 
+            Console.WriteLine("\nCadastro realizado com sucesso!");
+            Console.WriteLine("Agora você pode entrar com seu e-mail e senha.");
         }
- 
-        emailsCadastrados.Add(email);
- 
-        Console.WriteLine("\nCadastro realizado com sucesso!");
-        Console.WriteLine("Nome: " + nome);
-        Console.WriteLine("E-mail: " + email);
+        catch (Exception erro)
+        {
+            Console.WriteLine($"\nErro ao realizar cadastro: {erro.Message}");
+        }
     }
  
-
     public static bool EmailValido(string email)
     {
         try
@@ -82,28 +84,4 @@ public static class Cadastros
             return false;
         }
     }
- 
-    
-    public static void TestesCadastro()
-    {
-        Console.WriteLine("\n===== TESTES DO CADASTRO =====");
- 
-        Console.WriteLine("Teste nome vazio: " +
-            (string.IsNullOrWhiteSpace("") ? "APROVADO" : "REPROVADO"));
- 
-        Console.WriteLine("Teste e-mail inválido: " +
-            (!EmailValido("emailinvalido") ? "APROVADO" : "REPROVADO"));
- 
-        Console.WriteLine("Teste senha curta: " +
-            ("123".Length < 8 ? "APROVADO" : "REPROVADO"));
- 
-        Console.WriteLine("Teste senhas diferentes: " +
-            ("12345678" != "87654321" ? "APROVADO" : "REPROVADO"));
- 
-        Console.WriteLine("Teste e-mail válido: " +
-            (EmailValido("teste@email.com") ? "APROVADO" : "REPROVADO"));
-    }
 }
-
-
-
