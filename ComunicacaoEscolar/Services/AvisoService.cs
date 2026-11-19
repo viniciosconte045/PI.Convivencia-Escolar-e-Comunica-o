@@ -39,6 +39,7 @@ public class AvisoService
 
         while (leitor.Read())
         {
+            Console.WriteLine($"ID: {leitor.GetInt32("id_aviso")}");
             Console.WriteLine("\n================================");
             Console.WriteLine($"Título: {leitor.GetString("titulo")}");
             Console.WriteLine($"Autor: {leitor.GetString("nome")}");
@@ -47,5 +48,18 @@ public class AvisoService
             Console.WriteLine(leitor.GetString("conteudo"));
             Console.WriteLine("================================");
         }
+    }
+
+    public bool ExcluirAviso(int idAviso)
+    {
+        using MySqlConnection conexao = new Conexao().ObterConexao();
+        conexao.Open();
+
+        string sql = "DELETE FROM aviso WHERE id_aviso = @idAviso";
+
+        using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
+        comandoSql.Parameters.AddWithValue("@idAviso", idAviso);
+
+        return comandoSql.ExecuteNonQuery() > 0;
     }
 }

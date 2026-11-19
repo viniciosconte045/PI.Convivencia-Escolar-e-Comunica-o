@@ -316,15 +316,16 @@ static void MenuFuncionario(Usuario usuarioLogado)
         Console.WriteLine("================================");
         Console.WriteLine("       MENU DO FUNCIONÁRIO");
         Console.WriteLine("================================");
-        Console.WriteLine("1 - Enviar mensagem");
-        Console.WriteLine("2 - Acessar Conversas");
-        Console.WriteLine("3 - Consultar eventos");
+        Console.WriteLine("1 - Enviar aviso");
+        Console.WriteLine("2 - Acessar avisos");
+        Console.WriteLine("3 - Editar aviso");
+        Console.WriteLine("4 - Excluir aviso");
         Console.WriteLine("0 - Sair da conta");
         Console.WriteLine("================================");
 
         Console.Write("\nEscolha uma opção: ");
 
-        if (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 0 || opcao > 3)
+        if (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 0 || opcao > 6)
         {
             Console.WriteLine("\nOpção inválida!");
             Console.WriteLine("Pressione ENTER para voltar ao menu.");
@@ -366,12 +367,58 @@ static void MenuFuncionario(Usuario usuarioLogado)
             }
 
             case 2:
-                Console.WriteLine("\nVisualizar mensagens");
+                
+            {
+                Console.Clear();
+
+                Console.WriteLine("===== AVISOS GERAIS =====\n");
+
+                avisoService.ListarAvisos();
+
                 break;
+            }
 
             case 3:
                 Console.WriteLine("\nConsultar eventos");
                 break;
+
+            case 4:
+                {
+                    Console.Clear();
+
+                    Console.WriteLine("===== EXCLUIR AVISO =====\n");
+
+                    avisoService.ListarAvisos();
+
+                    Console.Write("\nDigite o ID do aviso: ");
+
+                    if (!int.TryParse(Console.ReadLine(), out int idAviso))
+                    {
+                        Console.WriteLine("\nID inválido!");
+                        break;
+                    }
+
+                    Console.Write("\nTem certeza que deseja excluir este aviso? (s/n): ");
+                    string confirmacao = Console.ReadLine() ?? "";
+
+                    if (confirmacao.ToLower() == "s")
+                    {
+                        if (avisoService.ExcluirAviso(idAviso))
+                        {
+                            Console.WriteLine("\nAviso excluído com sucesso!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nAviso não encontrado!");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nExclusão cancelada.");
+                    }
+
+                    break;
+                }
 
             case 0:
                 Console.WriteLine("\nSaindo da conta...");
