@@ -7,14 +7,14 @@ namespace ComunicacaoEscolar.Services;
 
 public class UsuarioService
 {
-    public void CadastrarUsuario(string nome, string email, string senha, string tipo)
+    public void CadastrarUsuario(string nome, string email, string senha, string tipo, string? cargo = null)
     {
         using MySqlConnection conexao = new Conexao().ObterConexao();
 
         conexao.Open();
 
-        string sql = @"INSERT INTO usuario (nome, email, senha, tipo)
-                       VALUES (@nome, @email, @senha, @tipo)";
+        string sql = @"INSERT INTO usuario (nome, email, senha, tipo, cargo)
+                       VALUES (@nome, @email, @senha, @tipo, @cargo)";
 
         using MySqlCommand comandosql = new MySqlCommand(sql, conexao);
 
@@ -22,7 +22,7 @@ public class UsuarioService
         comandosql.Parameters.AddWithValue("@email", email);
         comandosql.Parameters.AddWithValue("@senha", senha);
         comandosql.Parameters.AddWithValue("@tipo", tipo);
-
+        comandosql.Parameters.AddWithValue("@cargo", (object?)cargo ?? DBNull.Value);
         comandosql.ExecuteNonQuery();
     }
 
@@ -47,7 +47,10 @@ public class UsuarioService
                 leitor.GetString("nome"),
                 leitor.GetString("email"),
                 leitor.GetString("tipo"),
-                leitor.GetString("senha")
+                leitor.GetString("senha"),
+                leitor.IsDBNull(leitor.GetOrdinal("cargo"))
+                    ? null
+                    : leitor.GetString("cargo")                
             );
 
             usuarios.Add(usuario);
@@ -55,7 +58,7 @@ public class UsuarioService
 
         return usuarios;
     }
-    public void EditarUsuario(int id, string nome, string email, string senha, string tipo)
+    public void EditarUsuario(int id, string nome, string email, string senha, string tipo, string? cargo = null)
     {
     using MySqlConnection conexao = new Conexao().ObterConexao();
 
@@ -66,6 +69,7 @@ public class UsuarioService
                        email = @email,
                        senha = @senha,
                        tipo = @tipo
+                       cargo = @cargo
                    WHERE id_usuario = @id";
 
     using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
@@ -75,6 +79,7 @@ public class UsuarioService
     comandoSql.Parameters.AddWithValue("@email", email);
     comandoSql.Parameters.AddWithValue("@senha", senha);
     comandoSql.Parameters.AddWithValue("@tipo", tipo);
+    comandoSql.Parameters.AddWithValue("@cargo", (object?)cargo ?? DBNull.Value);
 
     comandoSql.ExecuteNonQuery();
 }
@@ -85,7 +90,7 @@ public class UsuarioService
 
         conexao.Open();
 
-        string sql = @"SELECT id_usuario, nome, email, tipo, senha
+        string sql = @"SELECT id_usuario, nome, email, tipo, senha, cargo
                     FROM usuario
                     WHERE id_usuario = @id";
 

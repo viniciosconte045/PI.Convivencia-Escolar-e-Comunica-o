@@ -10,12 +10,15 @@ public class Usuario
 
     public string Senha { get; private set; }
 
-    public Usuario(int idUsuario, string nome, string email, string tipo, string senha)
+    public string? Cargo { get; private set; }
+
+    public Usuario(int idUsuario, string nome, string email, string tipo, string senha, string? cargo = null)
     {
         IdUsuario = idUsuario;
         Nome = nome;
         Email = email;
         Tipo = tipo;
         Senha = senha;
+        Cargo = cargo;
     }
 }

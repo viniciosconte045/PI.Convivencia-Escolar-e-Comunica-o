@@ -172,7 +172,8 @@ public class ChatService
             return false;
         }
 
-        string sql = @"SELECT usuario.nome,
+        string sql = @"SELECT mensagem_chat.id_mensagem,
+                              usuario.nome,
                               mensagem_chat.conteudo,
                               mensagem_chat.data_envio
                        FROM mensagem_chat
@@ -198,7 +199,7 @@ public class ChatService
         while (leitor.Read())
         {
             encontrou = true;
-
+            Console.WriteLine($"\nID da mensagem: {leitor.GetInt32("id_mensagem")}");
             Console.WriteLine($"\n{leitor.GetString("nome")}");
             Console.WriteLine(
                 $"{leitor.GetDateTime("data_envio"):dd/MM/yyyy HH:mm}");
@@ -250,6 +251,51 @@ public class ChatService
         comandoSql.Parameters.AddWithValue("@idConversa", idConversa);
         comandoSql.Parameters.AddWithValue("@idRemetente", idRemetente);
         comandoSql.Parameters.AddWithValue("@conteudo", conteudo);
+
+        return comandoSql.ExecuteNonQuery() > 0;
+    }
+
+    // Edita uma mensagem enviada pelo próprio usuário.
+    public bool EditarMensagem(int idMensagem, int idUsuario, string novoConteudo)
+    {
+        novoConteudo = novoConteudo.Trim();
+
+        if (string.IsNullOrWhiteSpace(novoConteudo))
+        {
+            return false;
+        }
+
+        using MySqlConnection conexao = new Conexao().ObterConexao();
+        conexao.Open();
+
+        string sql = @"UPDATE mensagem_chat
+                    SET conteudo = @conteudo
+                    WHERE id_mensagem = @idMensagem
+                    AND id_remetente = @idUsuario";
+
+        using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
+
+        comandoSql.Parameters.AddWithValue("@conteudo", novoConteudo);
+        comandoSql.Parameters.AddWithValue("@idMensagem", idMensagem);
+        comandoSql.Parameters.AddWithValue("@idUsuario", idUsuario);
+
+        return comandoSql.ExecuteNonQuery() > 0;
+    }
+
+    // Exclui uma mensagem enviada pelo próprio usuário.
+    public bool ExcluirMensagem(int idMensagem, int idUsuario)
+    {
+        using MySqlConnection conexao = new Conexao().ObterConexao();
+        conexao.Open();
+
+        string sql = @"DELETE FROM mensagem_chat
+                    WHERE id_mensagem = @idMensagem
+                    AND id_remetente = @idUsuario";
+
+        using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
+
+        comandoSql.Parameters.AddWithValue("@idMensagem", idMensagem);
+        comandoSql.Parameters.AddWithValue("@idUsuario", idUsuario);
 
         return comandoSql.ExecuteNonQuery() > 0;
     }
