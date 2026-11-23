@@ -1,7 +1,11 @@
-﻿using ComunicacaoEscolar.Services;
+﻿using System;
+using ComunicacaoEscolar.Services;
 using ComunicacaoEscolar.Models;
+using ComunicacaoEscolar.Menus;
 
 LoginService loginService = new LoginService();
+
+
 
 
 while (true)
@@ -9,8 +13,42 @@ while (true)
     Console.Clear();
 
     Console.WriteLine("================================");
-    Console.WriteLine("       SISTEMA ESCOLAR");
+    Console.WriteLine("         SISTEMA ESCOLAR");
     Console.WriteLine("================================");
+
+    Console.WriteLine("\n1 - Fazer login");
+    Console.WriteLine("2 - Criar conta");
+    Console.WriteLine("0 - Sair");
+
+    Console.Write("\nEscolha uma opção: ");
+
+    if (!int.TryParse(Console.ReadLine(), out int opcao))
+    {
+        Console.WriteLine("\nOpção inválida.");
+        Console.ReadLine();
+        continue;
+    }
+
+    if (opcao == 0)
+    {
+        break;
+    }
+
+    if (opcao == 2)
+    {
+        Cadastros.CadastroPublico();
+
+        Console.WriteLine("\nPressione ENTER para continuar...");
+        Console.ReadLine();
+        continue;
+    }
+
+    if (opcao != 1)
+    {
+        Console.WriteLine("\nOpção inválida.");
+        Console.ReadLine();
+        continue;
+    }
 
     Console.Write("\nE-mail: ");
     string email = Console.ReadLine() ?? "";
@@ -25,6 +63,7 @@ while (true)
         if (usuario == null)
         {
             Console.WriteLine("\nE-mail ou senha incorretos.");
+            Console.ReadLine();
             continue;
         }
 
@@ -34,273 +73,25 @@ while (true)
 
         if (usuario.Tipo == "admin")
         {
-            MenuAdministrador();
+            MenuAdministrador.Exibir();
         }
-
         else if (usuario.Tipo == "funcionario")
         {
             MenuFuncionario(usuario);
         }
-        else
+        else if (usuario.Tipo == "aluno")
         {
-            Console.WriteLine("\nMenu ainda não implementado para esse tipo de usuário.");
+            MenuAluno(usuario);
+
         }
     }
     catch (Exception erro)
     {
         Console.WriteLine($"\nErro ao realizar login: {erro.Message}");
+        Console.ReadLine();
     }
 }
-static void MenuAdministrador()
-{
-    int opcao;
-    UsuarioService usuarioService = new UsuarioService();
 
-    do
-    {
-        Console.Clear();
-
-        Console.WriteLine("\n================================");
-        Console.WriteLine("     MENU DO ADMINISTRADOR");
-        Console.WriteLine("================================");
-        Console.WriteLine("1 - Cadastrar funcionário");
-        Console.WriteLine("2 - Listar usuários");
-        Console.WriteLine("3 - Consultar usuário por ID");
-        Console.WriteLine("4 - Editar usuário");
-        Console.WriteLine("5 - Excluir usuário");
-        Console.WriteLine("0 - Sair da conta");
-        Console.WriteLine("================================");
-
-        Console.Write("\nEscolha uma opção: ");
-        if (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 0 || opcao > 5)
-        {
-            Console.WriteLine("\nOpção inválida!");
-            Console.WriteLine("Pressione ENTER para voltar ao menu.");
-            Console.ReadLine();
-            continue;
-            }
-
-        switch (opcao)
-        {
-            
-            case 1:
-            {
-                Console.WriteLine("\n===== CADASTRO DE FUNCIONÁRIO =====");
-
-                Console.Write("Nome: ");
-                string nome = Console.ReadLine() ?? "";
-
-                Console.Write("E-mail: ");
-                string email = Console.ReadLine() ?? "";
-
-                Console.Write("Senha: ");
-                string senha = Console.ReadLine() ?? "";
-
-                if (nome == "" || email == "" || senha == "")
-                {
-                    Console.WriteLine("\nPreencha todos os campos!");
-                    break;
-                }
-
-                try
-                {
-                    
-                    usuarioService.CadastrarUsuario(nome, email, senha, "funcionario");
-
-                    Console.WriteLine("\nFuncionário cadastrado com sucesso!");
-                }
-                catch (Exception erro)
-                {
-                    Console.WriteLine($"\nErro ao cadastrar funcionário: {erro.Message}");
-                }
-
-                break;
-            }
-
-            case 2:
-            {
-                Console.WriteLine("\n===== LISTAR USUÁRIOS =====");
-                Console.WriteLine("1 - Ordenar por ID");
-                Console.WriteLine("2 - Ordenar por nome");
-
-                Console.Write("\nEscolha uma opção: ");
-
-                if (!int.TryParse(Console.ReadLine(), out int ordem) || ordem < 1 || ordem > 2)
-                {
-                    Console.WriteLine("\nOpção inválida!");
-                    break;
-                }
-
-                List<Usuario> usuarios = usuarioService.ListarUsuarios();
-
-                if (usuarios.Count == 0)
-                {
-                    Console.WriteLine("\nNenhum usuário cadastrado.");
-                    break;
-                }
-
-                if (ordem == 1)
-                {
-                    usuarios = usuarios.OrderBy(u => u.IdUsuario).ToList();
-                }
-                else
-                {
-                    usuarios = usuarios.OrderBy(u => u.Nome).ToList();
-                }
-
-                foreach (Usuario u in usuarios)
-                {
-                    Console.WriteLine("\n------------------------------");
-                    Console.WriteLine($"ID: {u.IdUsuario}");
-                    Console.WriteLine($"Nome: {u.Nome}");
-                    Console.WriteLine($"E-mail: {u.Email}");
-                    Console.WriteLine($"Tipo: {u.Tipo}");
-                }
-
-                Console.WriteLine("------------------------------");
-                break;
-            }
-
-
-            case 3:
-            {
-                Console.WriteLine("\n===== CONSULTAR USUÁRIO POR ID =====");
-
-                Console.Write("Digite o ID do usuário: ");
-
-                if (!int.TryParse(Console.ReadLine(), out int id))
-                {
-                    Console.WriteLine("\nID inválido!");
-                    break;
-                }
-
-                Usuario? usuario = usuarioService.ConsultarUsuarioPorId(id);
-
-                if (usuario == null)
-                {
-                    Console.WriteLine("\nUsuário não encontrado!");
-                }
-                else
-                {
-                    Console.WriteLine("\n===== USUÁRIO ENCONTRADO =====");
-                    Console.WriteLine($"ID: {usuario.IdUsuario}");
-                    Console.WriteLine($"Nome: {usuario.Nome}");
-                    Console.WriteLine($"E-mail: {usuario.Email}");
-                    Console.WriteLine($"Tipo: {usuario.Tipo}");
-                }
-
-                break;
-}
-
-            case 4:
-            {
-                Console.WriteLine("\n===== EDITAR USUÁRIO =====");
-
-                Console.Write("Digite o ID do usuário: ");
-
-                if (!int.TryParse(Console.ReadLine(), out int id))
-                {
-                    Console.WriteLine("\nID inválido!");
-                    break;
-                }
-
-                Usuario? usuario = usuarioService.ConsultarUsuarioPorId(id);
-
-                if (usuario == null)
-                {
-                    Console.WriteLine("\nUsuário não encontrado!");
-                    break;
-                }
-
-                Console.WriteLine("\n===== DADOS ATUAIS =====");
-                Console.WriteLine($"Nome: {usuario.Nome}");
-                Console.WriteLine($"E-mail: {usuario.Email}");
-                Console.WriteLine($"Tipo: {usuario.Tipo}");
-
-                Console.WriteLine("\n===== NOVOS DADOS =====");
-
-                Console.Write("Novo nome: ");
-                string nome = Console.ReadLine() ?? "";
-
-                Console.Write("Novo e-mail: ");
-                string email = Console.ReadLine() ?? "";
-
-                Console.Write("Nova senha: ");
-                string senha = Console.ReadLine() ?? "";
-
-                Console.Write("Novo tipo (aluno, funcionario ou admin): ");
-                string tipo = Console.ReadLine() ?? "";
-
-                if (nome == "" || email == "" || senha == "" || tipo == "")
-                {
-                    Console.WriteLine("\nPreencha todos os campos!");
-                    break;
-                }
-
-                usuarioService.EditarUsuario(id, nome, email, senha, tipo);
-
-                Console.WriteLine("\nUsuário atualizado com sucesso!");
-
-                break;
-            }
-
-            case 5:
-            {
-                Console.WriteLine("\n===== EXCLUIR USUÁRIO =====");
-
-                Console.Write("Digite o ID do usuário: ");
-
-                if (!int.TryParse(Console.ReadLine(), out int id))
-                {
-                    Console.WriteLine("\nID inválido!");
-                    break;
-                }
-
-                Usuario? usuario = usuarioService.ConsultarUsuarioPorId(id);
-
-                if (usuario == null)
-                {
-                    Console.WriteLine("\nUsuário não encontrado!");
-                    break;
-                }
-
-                Console.WriteLine($"\nNome: {usuario.Nome}");
-                Console.WriteLine($"E-mail: {usuario.Email}");
-                Console.WriteLine($"Tipo: {usuario.Tipo}");
-
-                Console.Write("\nTem certeza que deseja excluir? (s/n): ");
-                string confirmacao = Console.ReadLine() ?? "";
-
-                if (confirmacao.ToLower() == "s")
-                {
-                    usuarioService.ExcluirUsuario(id);
-                    Console.WriteLine("\nUsuário excluído com sucesso!");
-                }
-                else
-                {
-                    Console.WriteLine("\nExclusão cancelada.");
-                }
-
-                break;
-            }
-               
-            case 0:
-                Console.WriteLine("\nSaindo da conta...");
-                break;
-
-            default:
-                Console.WriteLine("\nOpção inexistente.");
-                break;
-            }
-
-            if (opcao != 0)
-            {
-            Console.WriteLine("\nPressione ENTER para continuar...");
-            Console.ReadLine();
-            }
-
-        } while (opcao != 0);
-}
 
 
 static void MenuFuncionario(Usuario usuarioLogado)
@@ -320,12 +111,13 @@ static void MenuFuncionario(Usuario usuarioLogado)
         Console.WriteLine("2 - Acessar avisos");
         Console.WriteLine("3 - Editar aviso");
         Console.WriteLine("4 - Excluir aviso");
+        Console.WriteLine("5 - Ver conversas");
         Console.WriteLine("0 - Sair da conta");
         Console.WriteLine("================================");
 
         Console.Write("\nEscolha uma opção: ");
 
-        if (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 0 || opcao > 6)
+        if (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 0 || opcao > 5)
         {
             Console.WriteLine("\nOpção inválida!");
             Console.WriteLine("Pressione ENTER para voltar ao menu.");
@@ -354,15 +146,28 @@ static void MenuFuncionario(Usuario usuarioLogado)
                 }
                 else
                 {
-                    avisoService.CadastrarAviso(
-                        usuarioLogado.IdUsuario,
-                        titulo,
-                        conteudo
-                    );
+                    Console.WriteLine("\n===== CONFIRMAR AVISO =====");
+                    Console.WriteLine($"Título: {titulo}");
+                    Console.WriteLine($"Conteúdo: {conteudo}");
 
-                    Console.WriteLine("\nAviso publicado com sucesso!");
+                    Console.Write("\nDeseja realmente publicar este aviso? (s/n): ");
+                    string confirmacao = Console.ReadLine() ?? "";
+
+                    if (confirmacao.ToLower() == "s")
+                    {
+                        avisoService.CadastrarAviso(
+                            usuarioLogado.IdUsuario,
+                            titulo,
+                            conteudo
+                        );
+
+                        Console.WriteLine("\nAviso publicado com sucesso!");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nPublicação cancelada.");
+                    }
                 }
-
                 break;
             }
 
@@ -377,10 +182,6 @@ static void MenuFuncionario(Usuario usuarioLogado)
 
                 break;
             }
-
-            case 3:
-                Console.WriteLine("\nConsultar eventos");
-                break;
 
             case 4:
                 {
@@ -419,6 +220,61 @@ static void MenuFuncionario(Usuario usuarioLogado)
 
                     break;
                 }
+            
+            case 3:
+                {
+                    Console.Clear();
+
+                    Console.WriteLine("===== EDITAR AVISO =====\n");
+
+                    avisoService.ListarAvisos();
+
+                    Console.Write("\nDigite o ID do aviso: ");
+
+                    if (!int.TryParse(Console.ReadLine(), out int idAviso))
+                    {
+                        Console.WriteLine("\nID inválido!");
+                        break;
+                    }
+
+                    Console.Write("\nNovo título: ");
+                    string titulo = Console.ReadLine() ?? "";
+
+                    Console.Write("Novo conteúdo: ");
+                    string conteudo = Console.ReadLine() ?? "";
+
+                    if (string.IsNullOrWhiteSpace(titulo) ||
+                        string.IsNullOrWhiteSpace(conteudo))
+                    {
+                        Console.WriteLine("\nPreencha todos os campos!");
+                        break;
+                    }
+
+                    Console.WriteLine("\n===== CONFIRMAR ALTERAÇÕES =====");
+                    Console.WriteLine($"Novo título: {titulo}");
+                    Console.WriteLine($"Novo conteúdo: {conteudo}");
+
+                    Console.Write("\nDeseja realmente editar este aviso? (s/n): ");
+                    string confirmacao = Console.ReadLine() ?? "";
+
+                    if (confirmacao.ToLower() == "s")
+                    {
+                        if (avisoService.EditarAviso(idAviso, titulo, conteudo))
+                        {
+                            Console.WriteLine("\nAviso atualizado com sucesso!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nAviso não encontrado!");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nEdição cancelada.");
+                    }
+
+                    break;
+                }
 
             case 0:
                 Console.WriteLine("\nSaindo da conta...");
@@ -434,3 +290,53 @@ static void MenuFuncionario(Usuario usuarioLogado)
     } while (opcao != 0);
 }
 
+
+
+static void MenuAluno(Usuario usuarioLogado)
+{
+    int opcao;
+    AvisoService avisoService = new AvisoService();
+
+    do
+    {
+        Console.Clear();
+
+        Console.WriteLine("================================");
+        Console.WriteLine("          MENU DO ALUNO");
+        Console.WriteLine("================================");
+
+        Console.WriteLine("\n1 - Visualizar avisos");
+        Console.WriteLine("0 - Sair da conta");
+
+        Console.Write("\nEscolha uma opção: ");
+
+        if (!int.TryParse(Console.ReadLine(), out opcao) ||
+            (opcao != 0 && opcao != 1))
+        {
+            Console.WriteLine("\nOpção inválida.");
+            Console.ReadLine();
+            continue;
+        }
+
+        switch (opcao)
+        {
+            case 1:
+                Console.Clear();
+
+                Console.WriteLine("===== AVISOS GERAIS =====\n");
+                avisoService.ListarAvisos();
+                break;
+
+            case 0:
+                Console.WriteLine("\nSaindo da conta...");
+                break;
+        }
+
+        if (opcao != 0)
+        {
+            Console.WriteLine("\nPressione ENTER para continuar...");
+            Console.ReadLine();
+        }
+
+    } while (opcao != 0);
+}

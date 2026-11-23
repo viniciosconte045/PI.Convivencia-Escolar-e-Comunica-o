@@ -62,4 +62,21 @@ public class AvisoService
 
         return comandoSql.ExecuteNonQuery() > 0;
     }
+    public bool EditarAviso(int idAviso, string titulo, string conteudo)
+    {
+        using MySqlConnection conexao = new Conexao().ObterConexao();
+        conexao.Open();
+
+        string sql = @"UPDATE aviso
+                    SET titulo = @titulo, conteudo = @conteudo
+                    WHERE id_aviso = @idAviso";
+
+        using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
+
+        comandoSql.Parameters.AddWithValue("@idAviso", idAviso);
+        comandoSql.Parameters.AddWithValue("@titulo", titulo);
+        comandoSql.Parameters.AddWithValue("@conteudo", conteudo);
+
+        return comandoSql.ExecuteNonQuery() > 0;
+    }
 }
