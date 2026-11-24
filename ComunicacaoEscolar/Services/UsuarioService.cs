@@ -9,6 +9,15 @@ public class UsuarioService
 {
     public void CadastrarUsuario(string nome, string email, string senha, string tipo, string? cargo = null)
     {
+        if (tipo != "funcionario")
+        {
+            cargo = null;
+        }
+        else if (string.IsNullOrWhiteSpace(cargo))
+        {
+            throw new ArgumentException("Funcionários precisam ter um cargo.");
+        }
+
         using MySqlConnection conexao = new Conexao().ObterConexao();
 
         conexao.Open();
@@ -59,16 +68,28 @@ public class UsuarioService
         return usuarios;
     }
     public void EditarUsuario(int id, string nome, string email, string senha, string tipo, string? cargo = null)
+    
+    
     {
-    using MySqlConnection conexao = new Conexao().ObterConexao();
+        if (tipo != "funcionario")
+        {
+            cargo = null;
+        }
+        else if (string.IsNullOrWhiteSpace(cargo))
+        {
+            throw new ArgumentException("Funcionários precisam ter um cargo.");
+        }
+    
+        using MySqlConnection conexao = new Conexao().ObterConexao();
 
+        
     conexao.Open();
 
     string sql = @"UPDATE usuario
                    SET nome = @nome,
                        email = @email,
                        senha = @senha,
-                       tipo = @tipo
+                       tipo = @tipo,
                        cargo = @cargo
                    WHERE id_usuario = @id";
 
@@ -107,7 +128,10 @@ public class UsuarioService
                 leitor.GetString("nome"),
                 leitor.GetString("email"),
                 leitor.GetString("tipo"),
-                leitor.GetString("senha")
+                leitor.GetString("senha"),
+                leitor.IsDBNull(leitor.GetOrdinal("cargo"))
+                    ? null
+                    : leitor.GetString("cargo")
             );
         }
 

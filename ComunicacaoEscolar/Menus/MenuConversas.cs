@@ -40,7 +40,7 @@ public static class MenuConversas
                     Console.Clear();
 
                     Console.WriteLine("===== CONTATOS DISPONÍVEIS =====\n");
-                    chatService.ListarContatos(usuarioLogado.IdUsuario);
+                    chatService.ListarContatos(usuarioLogado.IdUsuario, usuarioLogado.Tipo);
 
                     Console.Write("\nDigite o ID do contato: ");
 
@@ -69,7 +69,7 @@ public static class MenuConversas
                     Console.Clear();
 
                     Console.WriteLine("===== SUAS CONVERSAS =====\n");
-                    chatService.ListarConversas(usuarioLogado.IdUsuario);
+                    chatService.ListarConversas(usuarioLogado.IdUsuario, usuarioLogado.Tipo);
 
                     Console.Write("\nDigite o ID da conversa: ");
 
@@ -108,7 +108,7 @@ public static class MenuConversas
             Console.WriteLine("2 - Editar mensagem");
             Console.WriteLine("3 - Excluir mensagem");
             Console.WriteLine("0 - Voltar");
-            Console.WriteLine("0 - Voltar");
+
 
             Console.Write("\nEscolha uma opção: ");
             string opcao = Console.ReadLine() ?? "";

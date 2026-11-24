@@ -7,19 +7,25 @@ namespace ComunicacaoEscolar.Services;
 public class ChatService
 {
     // Lista os alunos e funcionários disponíveis para conversar.
-    public void ListarContatos(int idUsuarioLogado)
+    public void ListarContatos(int idUsuarioLogado, string tipoUsuarioLogado)
     {
         using MySqlConnection conexao = new Conexao().ObterConexao();
         conexao.Open();
 
-        string sql = @"SELECT id_usuario, nome, tipo
+        string sql = @"SELECT id_usuario, nome, tipo, cargo
                        FROM usuario
                        WHERE id_usuario <> @idUsuario
-                       AND tipo IN ('aluno', 'funcionario')
-                       ORDER BY nome";
+                       AND (
+                            (@tipoUsuario = 'aluno' AND tipo = 'funcionario')
+                            OR
+                            (@tipoUsuario = 'funcionario' AND tipo IN ('aluno', 'funcionario'))
+                        )
+                       ORDER BY nome"; 
 
         using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
+
         comandoSql.Parameters.AddWithValue("@idUsuario", idUsuarioLogado);
+        comandoSql.Parameters.AddWithValue("@tipoUsuario", tipoUsuarioLogado);
 
         using MySqlDataReader leitor = comandoSql.ExecuteReader();
 
@@ -29,11 +35,25 @@ public class ChatService
         {
             encontrou = true;
 
-            Console.WriteLine(
-                $"ID: {leitor.GetInt32("id_usuario")} | " +
-                $"Nome: {leitor.GetString("nome")} | " +
-                $"Tipo: {leitor.GetString("tipo")}");
+            Console.WriteLine("\n------------------------------");
+            Console.WriteLine($"ID: {leitor.GetInt32("id_usuario")}");
+            Console.WriteLine($"Nome: {leitor.GetString("nome")}");
+
+            if (leitor.GetString("tipo") == "funcionario")
+            {
+                string cargo = leitor.IsDBNull(leitor.GetOrdinal("cargo"))
+                    ? "Cargo não informado"
+                    : leitor.GetString("cargo");
+
+                Console.WriteLine($"Cargo: {cargo}");
+            }
+            else
+            {
+                Console.WriteLine("Aluno");
+            }
         }
+               
+        
 
         if (!encontrou)
         {
@@ -53,16 +73,22 @@ public class ChatService
         using MySqlConnection conexao = new Conexao().ObterConexao();
         conexao.Open();
 
-        string validarSql = @"SELECT COUNT(*)
-                              FROM usuario
-                              WHERE id_usuario IN (@idLogado, @idOutro)
-                              AND tipo IN ('aluno', 'funcionario')";
+        string validarSql =  @"SELECT COUNT(*)
+                                FROM usuario u1
+                                INNER JOIN usuario u2
+                                ON u2.id_usuario = @idOutro
+                                WHERE u1.id_usuario = @idLogado
+                                AND (
+                                    (u1.tipo = 'aluno' AND u2.tipo = 'funcionario')
+                                    OR
+                                    (u1.tipo = 'funcionario' AND u2.tipo IN ('aluno', 'funcionario'))
+                                )";
 
         using MySqlCommand validar = new MySqlCommand(validarSql, conexao);
         validar.Parameters.AddWithValue("@idLogado", idUsuarioLogado);
         validar.Parameters.AddWithValue("@idOutro", idOutroUsuario);
 
-        if (Convert.ToInt32(validar.ExecuteScalar()) != 2)
+        if (Convert.ToInt32(validar.ExecuteScalar()) != 1)
         {
             throw new InvalidOperationException(
                 "Usuário não encontrado ou não disponível para conversas.");
@@ -102,15 +128,21 @@ public class ChatService
     }
 
     // Lista todas as conversas do usuário.
-    public void ListarConversas(int idUsuarioLogado)
+    public void ListarConversas(int idUsuarioLogado, string tipoUsuarioLogado)
     {
         using MySqlConnection conexao = new Conexao().ObterConexao();
         conexao.Open();
+        if (tipoUsuarioLogado == "admin")
+        {
+            Console.WriteLine("\nAdministradores não possuem acesso ao chat.");
+            return;
+        }
 
         string sql = @"SELECT c.id_conversa,
                               contato.id_usuario AS id_contato,
                               contato.nome,
-                              contato.tipo
+                              contato.tipo,
+                              contato.cargo
                        FROM conversa c
                        INNER JOIN usuario contato
                        ON contato.id_usuario =
@@ -119,12 +151,18 @@ public class ChatService
                               THEN c.id_usuario2
                               ELSE c.id_usuario1
                           END
-                       WHERE c.id_usuario1 = @idUsuario
-                          OR c.id_usuario2 = @idUsuario
+                        WHERE (c.id_usuario1 = @idUsuario
+                          OR c.id_usuario2 = @idUsuario)
+                        AND (
+                            (@tipoUsuario = 'aluno' AND contato.tipo = 'funcionario')
+                            OR
+                            (@tipoUsuario = 'funcionario' AND contato.tipo IN ('aluno', 'funcionario'))
+                        )
                        ORDER BY c.data_criacao DESC";
 
         using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
         comandoSql.Parameters.AddWithValue("@idUsuario", idUsuarioLogado);
+        comandoSql.Parameters.AddWithValue("@tipoUsuario", tipoUsuarioLogado);
 
         using MySqlDataReader leitor = comandoSql.ExecuteReader();
 
@@ -140,15 +178,27 @@ public class ChatService
                 $"Contato: {leitor.GetString("nome")}");
             Console.WriteLine(
                 $"ID do contato: {leitor.GetInt32("id_contato")}");
-            Console.WriteLine(
-                $"Tipo: {leitor.GetString("tipo")}");
+            if (leitor.GetString("tipo") == "funcionario")
+            {
+                    string cargo = leitor.IsDBNull(leitor.GetOrdinal("cargo"))
+                    ? "Cargo não informado"
+                    : leitor.GetString("cargo");
+
+                Console.WriteLine($"Cargo: {cargo}");
+            }
+            else
+            {
+                Console.WriteLine("Aluno");
+                
+            }
         }
 
         if (!encontrou)
         {
             Console.WriteLine("\nVocê ainda não possui conversas.");
         }
-    }
+}
+
 
     // Mostra o histórico de mensagens.
     public bool ListarMensagens(int idConversa, int idUsuarioLogado)

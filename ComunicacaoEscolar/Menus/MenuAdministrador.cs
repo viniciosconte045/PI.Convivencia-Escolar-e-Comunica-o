@@ -52,8 +52,10 @@ public static class MenuAdministrador
 
                     Console.Write("Senha: ");
                     string senha = Console.ReadLine() ?? "";
+                    Console.Write("Cargo do funcionário: ");
+                    string cargo = Console.ReadLine() ?? "";
 
-                    if (nome == "" || email == "" || senha == "")
+                    if (nome == "" || email == "" || senha == "" || cargo == "")
                     {
                         Console.WriteLine("\nPreencha todos os campos!");
                         break;
@@ -62,7 +64,7 @@ public static class MenuAdministrador
                     try
                     {
                         
-                        usuarioService.CadastrarUsuario(nome, email, senha, "funcionario");
+                        usuarioService.CadastrarUsuario(nome, email, senha, "funcionario", cargo);
 
                         Console.WriteLine("\nFuncionário cadastrado com sucesso!");
                     }
@@ -112,6 +114,10 @@ public static class MenuAdministrador
                         Console.WriteLine($"Nome: {u.Nome}");
                         Console.WriteLine($"E-mail: {u.Email}");
                         Console.WriteLine($"Tipo: {u.Tipo}");
+                        if (u.Tipo == "funcionario")
+                        {
+                            Console.WriteLine($"Cargo: {u.Cargo}");
+                        }
                     }
 
                     Console.WriteLine("------------------------------");
@@ -144,6 +150,10 @@ public static class MenuAdministrador
                         Console.WriteLine($"Nome: {usuario.Nome}");
                         Console.WriteLine($"E-mail: {usuario.Email}");
                         Console.WriteLine($"Tipo: {usuario.Tipo}");
+                        if (usuario.Tipo == "funcionario")
+                        {
+                            Console.WriteLine($"Cargo: {usuario.Cargo}");
+                        }
                     }
 
                     break;
@@ -173,6 +183,10 @@ public static class MenuAdministrador
                     Console.WriteLine($"Nome: {usuario.Nome}");
                     Console.WriteLine($"E-mail: {usuario.Email}");
                     Console.WriteLine($"Tipo: {usuario.Tipo}");
+                    if (usuario.Tipo == "funcionario")
+                    {
+                        Console.WriteLine($"Cargo: {usuario.Cargo}");
+                    }
 
                     Console.WriteLine("\n===== NOVOS DADOS =====");
 
@@ -188,13 +202,22 @@ public static class MenuAdministrador
                     Console.Write("Novo tipo (aluno, funcionario ou admin): ");
                     string tipo = Console.ReadLine() ?? "";
 
-                    if (nome == "" || email == "" || senha == "" || tipo == "")
+                    string? cargo = null;
+
+                    if (tipo == "funcionario")
+                    {
+                        Console.Write("Novo cargo: ");
+                        cargo = Console.ReadLine();
+                    }
+
+                    if (nome == "" || email == "" || senha == "" || tipo == "" ||
+                        (tipo == "funcionario" && string.IsNullOrWhiteSpace(cargo)))
                     {
                         Console.WriteLine("\nPreencha todos os campos!");
                         break;
                     }
 
-                    usuarioService.EditarUsuario(id, nome, email, senha, tipo);
+                    usuarioService.EditarUsuario(id, nome, email, senha, tipo, cargo);
 
                     Console.WriteLine("\nUsuário atualizado com sucesso!");
 
