@@ -28,7 +28,7 @@ public static class MenuConversas
 
             if (!int.TryParse(Console.ReadLine(), out opcao) ||
                 (opcao != 0 && opcao != 1 && opcao != 2))
-            {
+            {   opcao = -1;
                 Console.WriteLine("\nOpção inválida.");
                 Console.ReadLine();
                 continue;
@@ -48,6 +48,7 @@ public static class MenuConversas
                     {
                         Console.WriteLine("\nID inválido.");
                         Console.ReadLine();
+                       
                         break;
                     }
 
@@ -74,7 +75,7 @@ public static class MenuConversas
                     Console.Write("\nDigite o ID da conversa: ");
 
                     if (!int.TryParse(Console.ReadLine(), out int idSelecionado))
-                    {
+                    {   
                         Console.WriteLine("\nID inválido.");
                         Console.ReadLine();
                         break;
@@ -133,6 +134,58 @@ public static class MenuConversas
                 else
                 {
                     Console.WriteLine("\nNão foi possível enviar a mensagem.");
+                }
+
+                Console.WriteLine("\nPressione ENTER para continuar...");
+                Console.ReadLine();
+            }
+            else if (opcao == "2")
+            {
+                Console.Write("\nDigite o ID da mensagem que deseja editar: ");
+                if (!int.TryParse(Console.ReadLine(), out int idMensagem))
+                {
+                    Console.WriteLine("\nID inválido.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                Console.Write("Digite a nova mensagem: ");
+                string novaMensagem = Console.ReadLine() ?? "";
+
+                bool editada = chatService.EditarMensagem(
+                    idMensagem, usuarioLogado.IdUsuario, idConversa, novaMensagem);
+
+                if (editada)
+                {
+                    Console.WriteLine("\nMensagem editada!");
+                }
+                else
+                {
+                    Console.WriteLine("\nNão foi possível editar a mensagem.");
+                }
+
+                Console.WriteLine("\nPressione ENTER para continuar...");
+                Console.ReadLine();
+            }
+            else if (opcao == "3")
+            {
+                Console.Write("\nDigite o ID da mensagem que deseja excluir: ");
+                if (!int.TryParse(Console.ReadLine(), out int idMensagem))
+                {
+                    Console.WriteLine("\nID inválido.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                bool excluida = chatService.ExcluirMensagem(idMensagem, usuarioLogado.IdUsuario, idConversa);
+
+                if (excluida)
+                {
+                    Console.WriteLine("\nMensagem excluída!");
+                }
+                else
+                {
+                    Console.WriteLine("\nNão foi possível excluir a mensagem.");
                 }
 
                 Console.WriteLine("\nPressione ENTER para continuar...");

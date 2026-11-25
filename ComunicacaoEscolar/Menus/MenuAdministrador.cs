@@ -30,7 +30,7 @@ public static class MenuAdministrador
 
             Console.Write("\nEscolha uma opção: ");
             if (!int.TryParse(Console.ReadLine(), out opcao) || opcao < 0 || opcao > 5)
-            {
+            {   opcao = -1;
                 Console.WriteLine("\nOpção inválida!");
                 Console.WriteLine("Pressione ENTER para voltar ao menu.");
                 Console.ReadLine();

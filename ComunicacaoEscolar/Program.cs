@@ -1,5 +1,4 @@
-﻿using System;
-using ComunicacaoEscolar.Services;
+﻿
 using ComunicacaoEscolar.Models;
 using ComunicacaoEscolar.Menus;
 
@@ -56,41 +55,47 @@ while (true)
     Console.Write("Senha: ");
     string senha = Console.ReadLine() ?? "";
 
+
+    Usuario? usuario;
     try
     {
-        Usuario? usuario = loginService.Autenticar(email, senha);
-
-        if (usuario == null)
-        {
-            Console.WriteLine("\nE-mail ou senha incorretos.");
-            Console.ReadLine();
-            continue;
-        }
-
-        Console.WriteLine("\nLogin realizado com sucesso!");
-        Console.WriteLine($"Nome: {usuario.Nome}");
-        Console.WriteLine($"Tipo: {usuario.Tipo}");
-
-        if (usuario.Tipo == "admin")
-        {
-            MenuAdministrador.Exibir();
-        }
-        else if (usuario.Tipo == "funcionario")
-        {
-            MenuFuncionario.Exibir(usuario);
-        }
-        else if (usuario.Tipo == "aluno")
-        {
-            MenuAluno.Exibir(usuario);
-
-        }
+        usuario = loginService.Autenticar(email, senha);
     }
     catch (Exception erro)
     {
         Console.WriteLine($"\nErro ao realizar login: {erro.Message}");
         Console.ReadLine();
+        continue;
+    }
+    
+
+    if (usuario == null)
+    {
+        Console.WriteLine("\nE-mail ou senha incorretos.");
+        Console.ReadLine();
+        continue;
+    }
+
+        Console.WriteLine("\nLogin realizado com sucesso!");
+        Console.WriteLine($"Nome: {usuario.Nome}");
+        Console.WriteLine($"Tipo: {usuario.Tipo}");
+
+    if (usuario.Tipo == "admin")
+    {
+        MenuAdministrador.Exibir();
+    }
+    else if (usuario.Tipo == "funcionario")
+    {
+        MenuFuncionario.Exibir(usuario);
+    }
+    else if (usuario.Tipo == "aluno")
+    {
+        MenuAluno.Exibir(usuario);
+
     }
 }
+
+
 
 
 

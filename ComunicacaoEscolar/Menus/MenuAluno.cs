@@ -28,7 +28,8 @@ public static class MenuAluno
 
             if (!int.TryParse(Console.ReadLine(), out opcao) ||
                 (opcao != 0 && opcao != 1 && opcao != 2))
-            {
+            {   
+                opcao = -1;
                 Console.WriteLine("\nOpção inválida.");
                 Console.ReadLine();
                 continue;

@@ -195,7 +195,7 @@ public class ChatService
 
         if (!encontrou)
         {
-            Console.WriteLine("\nVocê ainda não possui conversas.");
+            Console.WriteLine("\nVocê ainda não possui conversas. ");
         }
 }
 
@@ -306,7 +306,7 @@ public class ChatService
     }
 
     // Edita uma mensagem enviada pelo próprio usuário.
-    public bool EditarMensagem(int idMensagem, int idUsuario, string novoConteudo)
+    public bool EditarMensagem(int idMensagem, int idUsuario, int idConversa, string novoConteudo)
     {
         novoConteudo = novoConteudo.Trim();
 
@@ -321,31 +321,35 @@ public class ChatService
         string sql = @"UPDATE mensagem_chat
                     SET conteudo = @conteudo
                     WHERE id_mensagem = @idMensagem
-                    AND id_remetente = @idUsuario";
+                    AND id_remetente = @idUsuario
+                    AND id_conversa = @idConversa";
 
         using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
 
         comandoSql.Parameters.AddWithValue("@conteudo", novoConteudo);
         comandoSql.Parameters.AddWithValue("@idMensagem", idMensagem);
         comandoSql.Parameters.AddWithValue("@idUsuario", idUsuario);
+        comandoSql.Parameters.AddWithValue("@idConversa", idConversa);
 
         return comandoSql.ExecuteNonQuery() > 0;
     }
 
     // Exclui uma mensagem enviada pelo próprio usuário.
-    public bool ExcluirMensagem(int idMensagem, int idUsuario)
+    public bool ExcluirMensagem(int idMensagem, int idUsuario, int idConversa)
     {
         using MySqlConnection conexao = new Conexao().ObterConexao();
         conexao.Open();
 
         string sql = @"DELETE FROM mensagem_chat
                     WHERE id_mensagem = @idMensagem
-                    AND id_remetente = @idUsuario";
+                    AND id_remetente = @idUsuario
+                    AND id_conversa = @idConversa";
 
         using MySqlCommand comandoSql = new MySqlCommand(sql, conexao);
 
         comandoSql.Parameters.AddWithValue("@idMensagem", idMensagem);
         comandoSql.Parameters.AddWithValue("@idUsuario", idUsuario);
+        comandoSql.Parameters.AddWithValue("@idConversa", idConversa);
 
         return comandoSql.ExecuteNonQuery() > 0;
     }
