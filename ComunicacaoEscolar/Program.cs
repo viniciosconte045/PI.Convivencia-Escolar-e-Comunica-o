@@ -1,6 +1,10 @@
 ﻿
 using ComunicacaoEscolar.Models;
 using ComunicacaoEscolar.Menus;
+using ComunicacaoEscolar.Database;
+
+CriarDatabase.CriarBanco();
+
 
 LoginService loginService = new LoginService();
 
